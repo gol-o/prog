@@ -1,0 +1,664 @@
+#If Example Then
+Imports System.Console
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Sub Main()
+        WriteLine("")
+    End Sub
+End Module
+#End If
+
+'Code Snippet, Enumerationen
+'Ein-und mehrdimensionale Datenfelder, Dynamische Datenfelder
+'Klassen anlegen, Objektverweise
+'Optionale Funktionsargumente versus .NET Funktionen
+'Funktionen überladen, Array-Funktionen
+'Wichtige Klassen In .NET String-Klasse
+'Font-Klasse, File - und Directory-Klasse
+'Standarddialogformulare, Modale und Nichtmodale Formulare
+'Erweitertes Exception-Handling
+'Systemzugriffe, Daten auslesen und einlesen
+'Auf Excel zugreifen
+'Datenbankzugriff mit Visual Basic
+
+#If ImportExample0002 Then
+Imports System.Console 'determines a special class
+''' <summary>
+''' VB.net has already integrated certain namespaces automatically
+''' see: Project/Properties/References/Imported namespaces...
+''' therefore imports statement not required
+''' </summary>
+
+Module M
+    Sub Main()
+        'no need to qualify explicitly
+        Console.WriteLine("Test")
+        'same as
+        WriteLine("Test")
+    End Sub
+End Module
+#End If
+
+#If DataTypesExample0001 Then
+Imports System.Console
+''' <summary>
+''' Difference Type u. VariantType
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim a 'a is of type object (there is no variant type)
+        a = 5
+
+        Dim type As System.Type
+        type = a.GetType() 'returns a value of type Type
+        WriteLine(type) 'System.Int32
+
+        Dim varType As Microsoft.VisualBasic.VariantType
+        varType = Microsoft.VisualBasic.Information.VarType(a)
+        WriteLine(varType) '3
+        WriteLine(varType.GetType()) 'Microsoft.VisualBasic.VariantType
+    End Sub
+End Module
+#End If
+
+#If DataTypesExample0004 Then
+''' <summary>
+''' Shortcuts for variable types
+''' Access levels
+''' </summary>
+
+Module VariableTypes
+    Dim a 'i is of variant type (object)
+    Dim b% 'Integer
+    Dim c! 'Single
+    Dim d$ 'String
+    Dim e& 'Long
+    Dim f# 'Double
+    Sub Main()
+        Dim a% = 1
+        Dim type As VariantType = VarType(a)
+        WriteLine(type.ToString())
+    End Sub
+End Module
+
+#If 0 Then
+i%         'not valid at namespace level
+Dim i%     'not valid at namespace level
+Private i% 'not valid at namespace level
+Public i%  'not valid at namespace level
+#End If
+
+Module M
+    'Dim and private are two different things. Dim is used to declare variables and
+    'allocate memory space. Private is used as access modifier for the variable,
+    'on how your variable should be accessed. If you didn't specify an access modifier
+    'on a variable it will be private by default. You can optionally omit dim by 
+    'declaring the variable after the access modifier.
+    Dim a%
+    Private b%
+    'Protected 'error, not possible in modules
+    Public c%
+End Module
+
+Module N
+    Sub P()
+        c = 0 'ok, public
+        'or
+        M.c = 0
+#If 0 Then
+        M1.b = 0 'error, not visible
+#End If
+    End Sub
+End Module
+#End If
+
+#If StringExample0002 Then
+Imports System.Console
+''' <summary>
+''' String class 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim s As String 'initializes to Nothing
+        'or
+        Dim str$
+
+        Dim t As String
+
+        'VB: Nothing evaluates to ""
+        WriteLine(Len(t)) '= 0
+
+        '.NET: Nothing evaluates to null
+        WriteLine(t.Length) 'throws NullReferenceException
+
+        Dim m$ = String.Empty 'variable won't be marked as not used
+        WriteLine(m.Length) '= 0
+
+        Dim n$ = Nothing 'variable won't be marked as not used
+        WriteLine(n.Length) 'throws NullReferenceException
+    End Sub
+End Module
+#End If
+
+#If NamespaceExample0010 Then
+Namespace Customer
+    Class Customer
+        'Member variables
+        Private age As Byte
+        Public ss%
+        Public hd!
+    End Class
+End Namespace
+
+'Namespace are extensible
+Namespace Customer
+    Class Account
+        'Member variables
+        Public ReadOnly accountNum As ULong
+        Private _Balance As Decimal
+
+        'Properties
+        Public Property Balance As Decimal
+            Get
+                Return _Balance
+            End Get
+            Set(ByVal value As Decimal)
+                _Balance = value
+            End Set
+        End Property
+
+        'Body expressions
+
+        'Constructors
+        Public Sub New()
+            Console.WriteLine("Constructor")
+        End Sub
+    End Class
+End Namespace
+#End If
+
+#If NamespaceModuleExample0010 Then
+'A namespace can contain different modules
+'A module can not contain a namespace
+Namespace N1
+    Module M1
+    End Module
+    Module M2
+    End Module
+End Namespace
+
+Namespace N2
+    Module M1 'ok
+    End Module
+    Module M2
+    End Module
+End Namespace
+#End If
+
+'''''''''''''''''' to do 
+'array pass byval (nested braces or variant) and pass byref
+'
+
+
+#If ClassExample0004 Then
+Imports System.Console
+''' <summary>
+''' Class definition
+''' </summary>
+
+Class A
+    Private i%
+    Protected j%
+    Public k%
+
+    Public Sub New(Optional i% = 1, Optional j% = 2, Optional k% = 3)
+        Me.i = i
+        Me.j = j
+        Me.k = k
+    End Sub
+End Class
+#End If
+
+#If ClassExample0010 Then
+Imports System.Console
+''' <summary>
+''' Inheritance
+''' </summary>
+
+Class Person
+    'Member variables
+    Protected ReadOnly age As Byte
+    Protected ReadOnly firstname$, lastname$
+    Dim height As Single 'default private
+
+    Public Sub New(age As Byte, firstname As String, lastname As String, height As Single)
+        Me.age = age
+        Me.firstname = firstname
+        Me.lastname = lastname
+        Me.height = height
+    End Sub
+
+    Public Overridable Sub ShowPersonData()
+        WriteLine(firstname)
+        WriteLine(lastname)
+        WriteLine(age)
+        WriteLine(height)
+    End Sub
+End Class
+
+Class Employee
+    Inherits Person
+
+    ReadOnly id As UShort
+    Const company$ = "NewTech Ltd."
+
+    Public Sub New(id As UShort)
+        MyClass.New(id, Nothing, String.Empty, String.Empty, Nothing)
+    End Sub
+
+    Public Sub New(id As UShort, age As Byte, firstname As String, lastname As String, height As Single)
+        MyBase.New(age, firstname, lastname, height) 'must be first expression
+        Me.id = id
+    End Sub
+
+    Public Overrides Sub ShowPersonData() 'replaces fully base class version
+        WriteLine(id)
+        MyBase.ShowPersonData() 'needn't be first expression
+    End Sub
+End Class
+
+Module M
+    Sub Main()
+        Dim pArray As Person() 'Array!
+        Dim pRef As Person 'Reference (not initialized, null ref)
+
+        Dim p As New Person(33, "Tom", "Smith", 180)
+        p.ShowPersonData()
+
+        WriteLine("------------------------------")
+
+        Dim employee As New Employee(111)
+        employee.ShowPersonData()
+
+        WriteLine("------------------------------")
+
+        employee = New Employee(222, 44, "Tim", "Miller", 190)
+        employee.ShowPersonData()
+    End Sub
+End Module
+#End If
+
+#If InterfaceExample0003Then Then
+Interface ProcessAdministration
+    Function StopProcess(processId As UShort) As Boolean
+    Function StartProcess(processId As UShort) As Boolean
+    Sub ShutDownAllProcesses()
+    Function GetProcessStatus(processId As UShort) As ProcessState
+End Interface
+#End If
+
+#If StreamExample0043 Then
+Imports System.Console
+
+Module M
+    Sub Main()
+        Dim x As New Customer.Customer
+        Dim y As New Customer.Account
+        Dim list As List(Of Integer)
+    End Sub
+
+    Private Sub readFile()
+        Using reader As IO.TextReader =
+            System.IO.File.OpenText("login.txt")
+        End Using
+    End Sub
+End Module
+#End If
+
+#If LambdaExample0004 Then
+Imports System.Console
+Imports System.Math
+''' <summary>
+''' Lambda expression (anonymous delegate)
+''' Function lambda expression
+''' Sub lambda expression
+''' </summary>
+
+Module M
+    Sub Main()
+        'Multi-line version (funcLambda2D is of anonymous delegate type)
+        Dim funcLambda2D = Function(ByVal width As Single, ByVal height As Single) 'no optional keyword
+                               Return width * height
+                           End Function
+        WriteLine(funcLambda2D.Invoke(2, 3))
+        'or short
+        WriteLine(funcLambda2D(2, 3))
+
+        'Single-line version
+        Dim funcLambda3D = Function(width, height, depth) width * height * depth
+        WriteLine(funcLambda3D(2, 3, 4))
+
+        'Declaration and invokation inline
+        WriteLine((Function(x, y) Sqrt(x * x + y * y))(2, 3)) 'Function itself needs to be in brackets
+
+        'Sub lambda
+        Dim writeFormatted = Sub() WriteLine("Test")
+        writeFormatted()
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0004 Then
+Imports System.Console
+''' <summary>
+''' Delegate definition
+''' </summary>
+
+Module M
+    Function CircleArea!(ByVal Optional radius! = 1)
+        Return Math.PI * Math.Pow(radius, 2)
+    End Function
+
+    Function SphereVolume!(ByVal Optional radius! = 1)
+        Return 4 / 3 * Math.PI * Math.Pow(radius, 3)
+    End Function
+
+    Sub PrintCurrentDate()
+        WriteLine(Date.Now.ToShortDateString())
+    End Sub
+
+    Sub PrintCurrentTime()
+        WriteLine(Date.Now.ToShortTimeString())
+    End Sub
+
+    'Definition of delegate types
+    Delegate Function Calculation(r)
+    'or more comprehensive
+    Delegate Function FunctionDelegate(r!) As Single 'Delegate parameter can't be optional and can't own type shortcuts
+    Delegate Sub DateTimeInformation()
+
+    'delegates
+    Dim dlgCalc as Calculation
+    Dim dlgDate As DateTimeInformation
+
+    Sub Main()
+        Dim transaction As UInt32 = 112233
+        WriteLine("Transaction Id: " & transaction)
+
+        dlgDate = AddressOf PrintCurrentDate
+        If Not dlgDate Is Nothing Then
+            Write("Transaction Date: ")
+            dlgDate()
+            'or
+            dlgDate.Invoke()
+        End If
+
+        dlgDate = AddressOf PrintCurrentTime
+        If Not dlgDate Is Nothing Then
+            Write("Transaction Time: ") : dlgDate()
+        End If
+
+        dlgCalc = AddressOf CircleArea
+        WriteLine(dlgCalc(5))
+
+        dlgCalc = AddressOf SphereVolume
+        WriteLine(dlgCalc(5))
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0003 Then
+Imports System.Console
+''' <summary>
+''' Multicast-Delegate
+''' Remove Delegate
+''' Multicast-Delegate stored as array or list
+''' </summary>
+
+Module M
+    Enum ProcessState
+        ACTIV
+        SUSPENDED
+        OBSCURE
+        STOPPED
+    End Enum
+
+    'Methods
+    Sub ProcStart(ByVal procId As UShort)
+        WriteLine($"Start Process with Id {procId}")
+    End Sub
+
+    Sub ProcStop(ByVal procId As UShort)
+        WriteLine($"Stop Process with Id {procId}")
+    End Sub
+
+    Function GetProcState(ByVal procId As UShort) As String
+        Dim seed As Integer = Convert.ToInt32(Now.Ticks And &H7FFFFFFF) 'Bit mask with max. singned integer
+        Dim random As New Random(seed) 'alternatively Randomize u. Rnd()
+        Dim enumArray As Array = System.Enum.GetNames(GetType(ProcessState))
+        Dim numEnumElements = enumArray.Length
+        Dim randomValue = random.Next(numEnumElements)
+        Dim state = enumArray(randomValue)
+        WriteLine($"Process state: {state}")
+        Return state
+    End Function
+
+    'Delegate type definitions
+    Delegate Sub ProcessDelegate(ByVal id As UShort)
+    Delegate Function FunctionDelegate(a, b, c) As Single
+
+    Sub Main()
+        'Delegate instance
+        Dim processStarter As ProcessDelegate
+        processStarter = AddressOf ProcStart
+
+        'or in short form
+        Dim processStopper As ProcessDelegate = AddressOf ProcStop
+
+        'or with new operator
+        Dim processStop As New ProcessDelegate(AddressOf ProcStop)
+
+        'Multicast delegate
+        Dim multDelegates As [Delegate] 'Delegate as the class not as keyword
+        'or
+        Dim delegates As MulticastDelegate
+        delegates = ProcessDelegate.Combine(processStarter,
+                                            CType(AddressOf GetProcState, ProcessDelegate), 'or New ProcessDelegate(...)
+                                            processStopper)
+
+        'passing a value to all delegates (with the correct datatype)
+        Dim processId = 2233US
+        delegates.DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'load with lambda expression (but overwrites the previous values)
+        'casting is necessary because lambda expression is of type anonymous delegate, different types can't be mixed (else runtime errror)
+        processId = 3344US
+        delegates = ProcessDelegate.Combine(processStarter, processStop, CType(Sub(ByVal id As UShort)
+                                                                                   WriteLine($"Process-Id: {id}")
+                                                                                   WriteLine("Raise other process")
+                                                                                   processStarter(id)
+                                                                               End Sub, ProcessDelegate))
+
+        delegates.DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'Removing a delegate
+        MulticastDelegate.Remove(delegates, processStarter).DynamicInvoke(processId) 'delegate itself stays unchanged
+        'or
+        [Delegate].Remove(delegates, processStarter).DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'Multicast-delegate with function and sub lambdas
+        Dim multFuncDel = FunctionDelegate.Combine(Function(x, y, z) x + y + z, Function(x, y, z) x - y - z)
+        Dim multSubDel = ProcessDelegate.Combine(Sub(u) WriteLine(u), Sub(u) WriteLine(u), Sub(u) WriteLine(u))
+
+        WriteLine(multFuncDel.DynamicInvoke(1, 2, 3)) '= -4, result is the last function call, rest temporary
+        multSubDel.DynamicInvoke(1) '= 1 1 1
+
+        'Multicast-delegate stored as a array or list
+        Dim arrayOfAddresses() As ProcessDelegate = {AddressOf ProcStart, AddressOf ProcStop}
+        Dim listOfAddresses As New List(Of ProcessDelegate) From {AddressOf ProcStart, AddressOf ProcStop}
+
+        Dim multSubDelArray = ProcessDelegate.Combine(arrayOfAddresses)
+        Dim multSubDelList = ProcessDelegate.Combine(listOfAddresses.ToArray()) 'but need to transform to array
+
+        multSubDelArray.DynamicInvoke(1122US)
+        multSubDelList.DynamicInvoke(3344US)
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0049 Then
+Imports System.Console
+''' <summary>
+''' Delegate for Callback 
+''' </summary>
+
+Class Provider
+    Delegate Sub CallbackDelegate(i%)
+    Public Shared Callback As New CallbackDelegate(AddressOf CallbackProcedure) 'Delegate stores a reference to the method's entry point
+
+    Private Shared Sub CallbackProcedure(i%)
+        WriteLine("i = {0,2}", i)
+    End Sub
+End Class
+
+Class Subscriber
+    Shared Sub Main()
+        For index = 1 To 10
+            Provider.Callback(index)
+        Next
+    End Sub
+End Class
+#End If
+
+#If DelegateExample0049 Then
+Imports System.Console
+''' <summary>
+''' Delegate for Dependency Injection
+''' Predicate for check swaping on bubble sort algorithm 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim array(99) As Integer
+        Dim copy(99) As Integer
+
+        FillArrayRandomly(array)
+        array.CopyTo(copy, 0)
+
+        WriteLine("Unsorted copy: " & String.Join(",", copy))
+        WriteLine()
+
+        BubbleSort(copy, Function(x, y) IIf(x > y, True, False)) 'Descendant (or as different delegates)
+        'or shorter
+        BubbleSort(copy, Function(x, y) x > y)
+
+        WriteLine("Sorted copy (Desc): " & String.Join(",", copy))
+        WriteLine()
+
+        BubbleSort(copy, Function(x, y) IIf(x > y, False, True)) 'Ascendant
+        'or shorter
+        BubbleSort(copy, Function(x, y) x < y)
+
+        WriteLine("Sorted copy (Asc): " & String.Join(",", copy))
+    End Sub
+
+    Delegate Function Predicate(x As Integer, y As Integer) As Boolean
+
+    'Fill array with random values between -500 and +500
+    Private Sub FillArrayRandomly(ByRef array() As Integer) 'byref default, array arguments must be passed byref if declared with dim, redim, static
+        For index = 0 To array.GetUpperBound(0)
+            array(index) = 500 - Int(Rnd() * 1001)
+            WriteLine("Index: {0} Random value: {1}", index, array(index))
+        Next
+    End Sub
+
+    Private Sub BubbleSort(ByRef array() As Integer, pred As Predicate)
+        For index = 0 To Microsoft.VisualBasic.Information.UBound(array) - 1
+            For index2 = index + 1 To UBound(array)
+                If Not pred(array(index), array(index2)) Then
+                    Dim t = array(index2)
+                    array(index2) = array(index)
+                    array(index) = t
+                End If
+            Next
+        Next
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0044 Then
+Imports System.Console
+''' <summary>
+''' Special predefined Action() and Function() delegate
+''' </summary>
+
+Module M
+    Sub Proc(i As Integer, j As Integer, k As Double)
+    End Sub
+    Function Funct(i As UShort, j As Integer) As Double
+        Return 1.0
+    End Function
+
+    Sub Main()
+        Dim action As System.Action(Of Integer, Integer, Double)
+        action = AddressOf Proc
+
+        Dim func As System.Func(Of UShort, Integer, Double)
+        func = AddressOf Funct
+
+        'compatible to lambda expression
+        action = Sub(a, b, c) WriteLine(a + b + c)
+        func = Function(a, b) 1.0
+
+        action(1, 2, 3)
+        WriteLine(func(0, 0))
+    End Sub
+End Module
+#End If
+
+#If ThreadExample0045 Then
+Imports System.Console
+''' <summary>
+''' 
+''' </summary>
+
+Module M
+    Sub Main()
+    End Sub
+End Module
+#End If
+
+#If TaskExample0045 Then
+Imports System.Console
+''' <summary>
+''' 
+''' </summary>
+
+Module M
+    Sub Main()
+    End Sub
+End Module
+#End If
+
+#If Example0049 Then
+Imports System.Console
+''' <summary>
+''' 
+''' </summary>
+
+Module M
+    Sub Main()
+    End Sub
+End Module
+#End If

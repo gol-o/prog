@@ -1,0 +1,2162 @@
+#If ImportExample0002 Then
+Imports System.Console 'determines a special class
+''' <summary>
+''' VB.net has already integrated certain namespaces automatically
+''' see: Project/Properties/References/Imported namespaces...
+''' therefore imports statement not required
+''' </summary>
+
+Module M
+    Sub Main()
+        'no need to qualify explicitly
+        Console.WriteLine("Test")
+        'same as
+        WriteLine("Test")
+    End Sub
+End Module
+#End If
+
+#If DataTypesExample0001 Then
+Imports System.Console
+''' <summary>
+''' Difference Type u. VariantType
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim a 'a is of type object (there is no variant type)
+        a = 5
+
+        Dim type As System.Type
+        type = a.GetType() 'returns a value of type Type
+        WriteLine(type) 'System.Int32
+
+        Dim varType As Microsoft.VisualBasic.VariantType
+        varType = Microsoft.VisualBasic.Information.VarType(a)
+        WriteLine(varType) '3
+        WriteLine(varType.GetType()) 'Microsoft.VisualBasic.VariantType
+    End Sub
+End Module
+#End If
+
+#If DataTypesExample0004 Then
+''' <summary>
+''' Shortcuts for variable types
+''' Access levels
+''' </summary>
+
+Module VariableTypes
+    Dim a 'i is of variant type (object)
+    Dim b% 'Integer
+    Dim c! 'Single
+    Dim d$ 'String
+    Dim e& 'Long
+    Dim f# 'Double
+    Sub Main()
+        Dim a% = 1
+        Dim type As VariantType = VarType(a)
+        WriteLine(type.ToString())
+    End Sub
+End Module
+
+#if 1 Then
+i%         'not valid at namespace level
+Dim i%     'not valid at namespace level
+Private i% 'not valid at namespace level
+Public i%  'not valid at namespace level
+#End If
+
+Module M
+    'Dim and private are two different things. Dim is used to declare variables and
+    'allocate memory space. Private is used as access modifier for the variable,
+    'on how your variable should be accessed. If you didn't specify an access modifier
+    'on a variable it will be private by default. You can optionally omit dim by 
+    'declaring the variable after the access modifier.
+    Dim a%
+    Private b%
+    'Protected 'error, not possible in modules
+    Public c%
+End Module
+
+Module N
+    Sub P()
+        c = 0 'ok, public
+        'or
+        M.c = 0
+#if 1 Then
+        M1.b = 0 'error, not visible
+#End If
+    End Sub
+End Module
+#End If
+
+#If StringExample0002 Then
+Imports System.Console
+''' <summary>
+''' String class 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim s As String 'initializes to Nothing
+        'or
+        Dim str$
+
+        Dim t As String
+
+        'VB: Nothing evaluates to ""
+        WriteLine(Len(t)) '= 0
+
+        '.NET: Nothing evaluates to null
+        WriteLine(t.Length) 'throws NullReferenceException
+
+        Dim m$ = String.Empty 'variable won't be marked as not used
+        WriteLine(m.Length) '= 0
+
+        Dim n$ = Nothing 'variable won't be marked as not used
+        WriteLine(n.Length) 'throws NullReferenceException
+    End Sub
+End Module
+#End If
+
+#If ArrayExample0032 Then
+Imports System.Console
+''' <summary>
+''' Array reference type 
+''' </summary>
+
+Module M
+    Sub Main()
+        'short definition
+        Dim x() 'ok, but missing size specification
+        If False Then
+            x(0) = 0
+            WriteLine(x(0)) 'runtime error, null ref. exception
+        End If
+
+        Dim a(3) 'array of type object
+        a(0) = New Integer
+        a(1) = "test"
+        a(2) = 0.0001D
+        a(3) = True
+
+        WriteLine(a.GetType()) '= System.Object
+        WriteLine(a(0)) '= 0
+        WriteLine(a(1))
+        WriteLine(a(2))
+        WriteLine(a(3))
+
+        ChangeArray(a)
+        WriteLine(a(0)) '= 1
+
+        WriteLine(ReturnLocalArray(0)) '= Test
+        WriteLine(ReturnLocalArray(1)) '= 100
+    End Sub
+
+    Sub ChangeArray(ByVal a()) 'as Object, changes although ByVal
+        a(0) = 1
+    End Sub
+
+    Function ReturnLocalArray()
+        Dim a() = {"Test", 100}
+        Return a
+    End Function
+End Module
+#End If
+
+#If ArrayExample9934 Then
+Imports System.Console
+''' <summary>
+''' Array definition, initialization, output
+''' </summary>
+
+Module M
+    Sub Main()
+        'Initialization
+        Dim a() 'uninitialized reference (without () may incorrect -> no Length-property)
+        a = {1, 2, 3, 4, 5}
+
+        Dim aZ(-1) 'zero-length array, avoids null check e.g. UBound(aZ)
+
+        Dim b(2) = {1, 2, 3} 'error, no explicit bounds
+        Dim c() = {1, 2, 3} 'ok, index from 0 to 2
+        'but
+        Dim d(10)
+        d(3) = 0 'ok
+        d = {1, 2, 3} '=> d addresses new array with only 3 elements
+        d(3) = 0 'runtime error
+
+        Dim e$(10) 'string array with 10 + 1 elements (values: nothing)
+        e = {"one", "two", "three"}
+        e(11) = "last" 'runtime error
+
+        'Output
+        Dim f() = {1, 2, 3, 4, 5}
+
+        For index = 0 To f.Length - 1
+            WriteLine(f(index))
+        Next
+
+        For index = 0 To f.Count - 1
+            WriteLine(f(index))
+        Next
+
+        For Each item As Integer In f
+            WriteLine(item)
+        Next
+
+        f.ToList().ForEach(Sub(elem) WriteLine(elem)) 'with list sequencer
+
+        WriteLine(String.Join("-", f)) 'with string join method
+
+        'New
+        Dim g() As Double = New Double() {1.1, 2.2, 3.3}
+        'or
+        Dim h As Double() = New Double(2) {1.1, 2.2, 3.3}
+        'not
+        Dim i() As Double = New Double(3) {1.1, 2.2, 3.3} 'error, missing one element
+
+        'Redefining
+        ReDim Preserve h(10) 'redefining the size and set the rest to 0
+        WriteLine(String.Join("-", h)) 'with string join method
+
+        'Determine lower/upper bounds
+        WriteLine(h.GetLowerBound(0)) '= 0
+        WriteLine(h.GetUpperBound(0)) '= 10
+
+        'Multidimensional rectangular arrays
+        Dim k(,)
+        Dim m(5, 10)
+        Dim n(2, 3, ) 'error
+
+        'Initialization
+        Dim o(,) As Integer = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 13}}
+        Dim p(,) As Integer = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11}} 'error, not rectangular
+        Dim q(1, 2) As Integer = {{1, 2, 3}, {1, 2, 3}} 'error, no explicit quantification
+
+        'New
+        Dim r(,) As Integer = New Integer(,) {{1}, {2}, {3}}
+        'or
+        Dim s(,) As Integer = New Integer(2, 0) {{1}, {2}, {3}}
+        'type inference
+        Dim t = New Integer(1, 2) {{1, 2, 3}, {4, 5, 6}}
+        'explicit
+        Dim u As Integer(,) = New Integer(1, 2) {{1, 2, 3}, {4, 5, 6}}
+        Dim v(,) As Integer(,) = New Integer(1, 2) {{1, 2, 3}, {4, 5, 6}} 'not at both
+        Dim w(,) = New Integer(1, 0) {{1}, {2}}
+        ReDim w(4, 4)
+
+        'Output
+        For Each item In t 'print out all elements in sequentiell order
+            WriteLine(item)
+        Next
+
+        'rows
+        For index = 0 To t.GetLength(0) - 1
+            'columns
+            For index2 = 0 To t.GetLength(1) - 1
+                Write(t(index, index2) & " ")
+            Next
+            WriteLine()
+        Next
+
+        'Multidimensional nonrectangular (jagged) arrays
+        Dim x()() As Integer
+        Dim y As Integer()()
+        Dim z%(10)()
+        Dim aa(10)(20)() 'error, only top array can be quantified
+        'but
+        ReDim z(10)(10) 'both dimensions must be quantified and the first can't be > 10
+
+        'Initialization
+        Dim ab()() = New Integer(5)() {}
+        ab(0) = {1, 2, 3}
+        ab(1) = {1, 2}
+
+        z(0) = {1}
+        z(1) = {1, 2}
+
+        Dim ac()() = {New Integer() {1, 2}, New Integer() {1, 2, 3}}
+
+        'Output
+        For Each item As Integer() In ac
+            For Each item2 As Integer In item
+                Write(item2 & " ")
+            Next
+            WriteLine()
+        Next
+
+        'or
+        For index = 0 To ac.GetLength(0) - 1
+            For index2 = 0 To ac(index).GetLength(0) - 1
+                Write(ac(index)(index2) & " ")
+            Next
+            WriteLine()
+        Next
+
+        'Solution Slide
+        Dim prueftabellen(2, 4, 5) As UShort
+        prueftabellen = {
+                         {
+                          {8825, 7, 5, 3, 0, 0},
+                          {1254, 0, 2, 2, 3, 0},
+                          {4853, 4, 0, 5, 0, 0},
+                          {2267, 0, 8, 8, 7, 0},
+                          {0, 0, 0, 0, 0, 0}
+                         },
+                         {
+                          {7458, 2, 3, 0, 0, 0},
+                          {6462, 4, 2, 0, 0, 0},
+                          {9652, 0, 0, 0, 1, 4},
+                          {0, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 0}
+                         },
+                         {
+                          {9132, 0, 0, 0, 3, 3},
+                          {5977, 0, 0, 0, 2, 0},
+                          {0, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 0}
+                         }
+                        }
+    End Sub
+End Module
+#End If
+
+#If ArrayExample9943 Then
+Imports System.Globalization
+''' <summary>
+''' Jagged array application Datetable 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim sales(11)() As Double
+        For month As Integer = 0 To 11
+            Dim daysInMonth As Integer =
+            DateTime.DaysInMonth(Year(Now), month + 1)
+            sales(month) = New Double(daysInMonth - 1) {}
+        Next
+
+        For month As Integer = 0 To 11
+            For dayOfMonth = 0 To sales(month).GetUpperBound(0)
+                sales(month)(dayOfMonth) = (month * 100) + dayOfMonth
+            Next
+        Next
+
+        Dim monthNames = DateTimeFormatInfo.CurrentInfo.AbbreviatedMonthNames
+        Console.Write("    ")
+        For ctr = 0 To sales.GetUpperBound(0)
+            Console.Write($" {monthNames(ctr)}   ")
+        Next
+        Console.WriteLine()
+        For dayInMonth = 0 To 30
+            Console.Write($"{dayInMonth + 1,2}.  ")
+            For monthNumber = 0 To sales.GetUpperBound(0)
+                If dayInMonth > sales(monthNumber).GetUpperBound(0) Then
+                    Console.Write("       ")
+                Else
+                    Console.Write($"{sales(monthNumber)(dayInMonth),-5}  ")
+                End If
+            Next
+            Console.WriteLine()
+        Next
+    End Sub
+End Module
+
+#End If
+#If ArrayExample9492 Then
+Imports System.Console
+''' <summary>
+''' Arrays sorting and finding criterabased values 
+''' All arrays inherits from the Array class 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim a As Array() 'default class for every array
+
+        'Array with random values
+        Dim random As New Random()
+        Dim bytes = New Byte(30) {}
+        random.NextBytes(bytes)
+        WriteLine(String.Join(" ", bytes))
+
+        'Sort the array (with side effects)
+        Array.Sort(bytes) 'ascending and changes the original array
+        WriteLine(String.Join(" ", bytes))
+
+        'Sort copy
+        random.NextBytes(bytes)
+        Dim copy(30) As Byte
+        Array.Copy(bytes, copy, copy.Length)
+        WriteLine(String.Join(" ", copy))
+        Array.Sort(copy) 'ascending and changes the original array
+        WriteLine(String.Join(" ", copy))
+
+        'Sort descending
+        'first create IComparer instance
+        Dim comparer As IComparer = New CustomComparer()
+        Array.Sort(copy, comparer)
+        WriteLine(String.Join(" ", copy))
+
+        'alternatively use lambda expression
+        Array.Sort(copy, Function(x, y) x > y)
+        WriteLine(String.Join(" ", copy))
+        Array.Sort(copy, Function(x, y) x < y)
+        WriteLine(String.Join(" ", copy))
+
+        Array.ForEach(copy, Sub(x) Write(x & " ")) 'alternative output
+
+        'Searching
+        Dim p As Predicate(Of Byte)
+        p = New Predicate(Of Byte)(AddressOf CustomPredicate)
+        Dim result = Array.FindAll(copy, p)
+        WriteLine(vbLf + $"Found {result.Length} elements.")
+        WriteLine(String.Join(", ", result))
+        'or with lambda expression
+        dim limit1 = 10, limit2 = 200
+        result = Array.FindAll(copy, Function(x) x < limit1 Or x > limit2) 'no argument passing in lambda
+        Array.Sort(result)
+        WriteLine(String.Join(", ", result))
+
+        'Alternatively LINQ (don't need to be imported)
+        Array.Sort(bytes)
+        WriteLine(String.Join(", ", bytes))
+        Dim linq = From x In bytes
+                   Where x > bytes.Average(Function(y) y) - 10 And x < bytes.Average(Function(y) y) + 10
+                   Select x
+        WriteLine(String.Join(", ", linq))
+    End Sub
+
+    Class CustomComparer
+        Implements IComparer
+        Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+            If DirectCast(x, Byte) > DirectCast(y, Byte) Then
+                Return -1
+            Else
+                If DirectCast(x, Byte) < DirectCast(y, Byte) Then
+                    Return 1
+                Else
+                    Return 0
+                End If
+            End If
+        End Function
+    End Class
+
+    Function CustomPredicate(b As Byte) As Boolean
+        Return b > 10 And b < 30
+    End Function
+End Module
+#End If
+
+#If ListExample0034 Then
+Imports System.Console
+''' <summary>
+''' List type 
+''' </summary>
+
+Module M
+    Sub Main()
+        'non generic
+        Dim a As New ArrayList
+        a.Add("Test")
+        'or
+        'a(0) = 2 'error
+        a.Add(2)
+        WriteLine(a(0)) 'ok
+        WriteLine(a(1))
+
+        For Each item In a
+            WriteLine(item)
+        Next
+        'or
+        WriteLine(String.Join(" ", a.ToArray())) 'first, transform to array
+
+        a.AddRange(New Integer() {1, 2, 3})
+        WriteLine(String.Join("-", a.ToArray()))
+
+        'Initializationlist
+        Dim b As New ArrayList() From {True, False, "Hello", 3}
+        WriteLine(String.Join("-", b.ToArray()))
+
+        'generic
+        Dim c As New List(Of Integer) From {1, 2, 3, 4, 5}
+        WriteLine(String.Join("-", c.ToArray()))
+        'or, because its no arraylist
+        c.ForEach(Sub(x) Write(x & " "))
+
+        'Aggregation
+        WriteLine()
+        WriteLine(c.Sum())
+        WriteLine(c.Average())
+
+        'Write a method for calculation the standard deviation
+        WriteLine(Math.Sqrt(c.Sum(Function(x) Math.Pow(c.Average() - x, 2)) / c.Count))
+
+        'List implements IEnumerable
+        Dim d As New List(Of Integer) From {4, 3, 2, 1}
+        Dim enumerator As IEnumerator = d.GetEnumerator()
+        enumerator.Reset()
+        While enumerator.MoveNext()
+            WriteLine(enumerator.Current)
+        End While
+    End Sub
+End Module
+#End If
+
+#If ListExample3992 Then
+Imports System.Console
+Imports System.Linq
+''' <summary>
+''' Join with LINQ 
+''' </summary>
+
+Class Person
+    Public Property Name As String
+    Public Property DepNumber As UShort
+End Class
+
+Class Department
+    Public Property DepNumber As UShort
+    Public Property Designation As String
+End Class
+
+Module M
+    Sub Main()
+        Dim persons As IList(Of Person) = New List(Of Person) From {
+            New Person With {.Name = "Sam", .DepNumber = 2282},
+                New Person With {.Name = "Tom", .DepNumber = 3333},
+                New Person With {.Name = "Fred", .DepNumber = 5557},
+                New Person With {.Name = "Ron", .DepNumber = 8838},
+                New Person With {.Name = "Jane", .DepNumber = 8838},
+                New Person With {.Name = "Ben", .DepNumber = 2584},
+                New Person With {.Name = "Mim", .DepNumber = 7784},
+                New Person With {.Name = "Dan", .DepNumber = 3333},
+                New Person With {.Name = "Sid", .DepNumber = 3333}
+        }
+
+        Dim departments As IList(Of Department) = New List(Of Department) From {
+           New Department With {.DepNumber = 2282, .Designation = "Marketing"},
+                New Department With {.DepNumber = 2584, .Designation = "Engineering"},
+                New Department With {.DepNumber = 3333, .Designation = "Human Resources"},
+                New Department With {.DepNumber = 5557, .Designation = "Billing"},
+                New Department With {.DepNumber = 7784, .Designation = "Export"},
+                New Department With {.DepNumber = 8838, .Designation = "Logistics"}
+        }
+
+        Dim query = From p In persons
+                    Join d In departments On p.DepNumber Equals d.DepNumber
+                    Select p.Name, d.Designation
+
+        For Each e In query
+            WriteLine($"{e.Name}: {e.Designation}")
+        Next
+    End Sub
+End Module
+#End If
+
+#If ModuleExample9943 Then
+''' <summary>
+''' Modul declares global or local procedures.
+''' Can't be nested and expanded
+''' </summary>
+
+Module A
+    Module B 'error, no nesting
+    End Module
+End Module
+
+Module A
+    Sub A() : End Sub
+End Module
+
+Module A 'error, no extension
+    Sub B() : End Sub
+End Module
+
+Module B
+    Sub S() : End Sub
+    Private Sub T() : End Sub
+
+    Public i As Integer = 1
+    Private j As Integer = 1
+End Module
+
+Module M
+    Sub Main()
+        S()
+        'or
+        B.S()
+        B.T() 'error, private
+
+        i = 0
+        j = 0 'error, private
+    End Sub
+End Module
+#End If
+
+#If NamespaceModuleExample0010 Then
+'A namespace can contain different modules
+'A module can not contain a namespace
+
+Namespace N1
+    Module M1
+    End Module
+    Module M2
+    End Module
+End Namespace
+
+Namespace N2
+    Module M1 'ok
+    End Module
+    Module M2
+    End Module
+End Namespace
+#End If
+
+#If NamespaceExample0010 Then
+Namespace Customer
+    Class Customer
+        'Member variables
+        Private age As Byte
+        Public ss%
+        Public hd!
+    End Class
+End Namespace
+
+'Namespace are extensible
+Namespace Customer
+    Class Account
+        'Member variables
+        Public ReadOnly accountNum As ULong
+        Private _Balance As Decimal
+
+        'Properties
+        Public Property Balance As Decimal
+            Get
+                Return _Balance
+            End Get
+            Set(ByVal value As Decimal)
+                _Balance = value
+            End Set
+        End Property
+
+        'Constructors
+        Public Sub New()
+            Console.WriteLine("Constructor")
+        End Sub
+    End Class
+End Namespace
+#End If
+
+#If OverloadingExample Then
+Imports System.Console
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Sub S()
+    End Sub
+
+    Sub S(i)
+    End Sub
+
+    Sub S(i, j)
+    End Sub
+
+    Sub S(i%)
+    End Sub
+
+    Sub S(i!)
+    End Sub
+
+    Function F()
+        Return 0
+    End Function
+
+    Function F(i%)
+        Return 1
+    End Function
+
+    Sub Main()
+    End Sub
+End Module
+
+Class A
+    Overloads Function F()
+        Return 0
+    End Function
+
+    Overloads Function F(i%)
+        Return 1
+    End Function
+
+    Function F(i%, j&) 'error, of Overloads is used all functions need to specify
+        Return 1
+    End Function
+End Class
+#End If
+
+#If ClassExample0004 Then
+Imports System.Console
+''' <summary>
+''' Class definition
+''' </summary>
+
+Class A
+    'Fields are default private
+    Private i%
+    Protected j%
+    Public k%
+    Dim m%
+
+    Sub New(Optional i% = 1, Optional j% = 2, Optional k% = 3) 'Methods are default public
+        Me.i = i
+        Me.j = j
+        Me.k = k
+    End Sub
+End Class
+#End If
+
+#If ClassExample0004 Then
+Imports System.Console
+''' <summary>
+''' Properties, Objectinitializer
+''' </summary>
+
+Class Customer
+    '----------------------------------------
+    'Property
+    'Backing field and set-standard parameter
+    '----------------------------------------
+    Private _company As String
+
+    Public Property Company As String
+        Get
+            Return _company
+        End Get
+        Set
+            _company = Value
+        End Set
+    End Property
+
+    '----------------------------------------
+    'Property
+    'Backing field and set-customized para-
+    'meter
+    '----------------------------------------
+    Private _id As UShort 'backing field
+
+    Public Property Id As UShort
+        Get
+            Return _id
+        End Get
+        Set(newId As UShort) 'customized parameter
+            _id = newId
+        End Set
+    End Property
+
+    '----------------------------------------
+    'Property
+    'Autoproperty
+    '----------------------------------------
+    Public Property Address As String
+    'creates invisible field _address
+
+    Public Property Discount As Decimal
+
+    '----------------------------------------
+    'Property
+    'Autogenerated ('Encapsulate Field')
+    '----------------------------------------
+    Private _phone As String
+
+    Public Property Phone As String
+        Get
+            Return _phone
+        End Get
+        Set(value As String)
+            _phone = value
+        End Set
+    End Property
+
+    '----------------------------------------
+    'Property
+    'Set or Get, Readonly/Writeonly
+    '----------------------------------------
+    Private ReadOnly _website As String
+
+    Public ReadOnly Property Website As String
+        Get
+            Return _website
+        End Get
+    End Property
+
+    Private _regularClient As Boolean
+
+    Public WriteOnly Property RegularClient As Boolean
+        Set
+            _regularClient = Value
+        End Set
+    End Property
+
+    '----------------------------------------
+    'Constructor (select class, generate...)
+    '----------------------------------------
+    Public Sub New(company As String, id As UShort, address As String, discount As Decimal, phone As String, website As String, regularClient As Boolean)
+        _company = company
+        _id = id
+        Me.Address = address 'only autoprop
+        Me.Discount = discount 'only autoprop
+        _phone = phone
+        _website = website 'property can't be used: readonly
+        _regularClient = regularClient
+    End Sub
+
+    Public Sub New()
+    End Sub
+
+    Shared Sub Main()
+        '----------------------------------------
+        'Objectinitialization with Constructor
+        '----------------------------------------
+        With Nothing 'local block
+            Dim customer As New Customer("ABC", 2244US, "New York", 0.05D, "555-23555", "abc.com", True)
+        End With
+
+        '----------------------------------------
+        'Objectinitializer with Properties
+        '----------------------------------------
+        With Nothing
+            Dim customer As New Customer With
+            {
+                .Id = 5522US, 'any order
+                .Company = "DEF" 'etc.
+            }
+
+            WriteLine(customer.Id)
+            customer.RegularClient = True
+            'WriteLine(customer.RegularClient) 'error
+        End With
+    End Sub
+End Class
+#End If
+
+#If ClassExample0010 Then
+Imports System.Console
+''' <summary>
+''' Inheritance
+''' </summary>
+
+Class Person
+    'Member variables
+    Protected ReadOnly age As Byte
+    Protected ReadOnly firstname$, lastname$
+    Dim height As Single 'default private
+
+    Public Sub New(age As Byte, firstname As String, lastname As String, height As Single)
+        Me.age = age
+        Me.firstname = firstname
+        Me.lastname = lastname
+        Me.height = height
+    End Sub
+
+    Public Overridable Sub ShowPersonData()
+        WriteLine(firstname)
+        WriteLine(lastname)
+        WriteLine(age)
+        WriteLine(height)
+    End Sub
+End Class
+
+Class Employee
+    Inherits Person
+
+    ReadOnly id As UShort
+    Const company$ = "NewTech Ltd."
+
+    Public Sub New(id As UShort)
+        MyClass.New(id, Nothing, String.Empty, String.Empty, Nothing)
+    End Sub
+
+    Public Sub New(id As UShort, age As Byte, firstname As String, lastname As String, height As Single)
+        MyBase.New(age, firstname, lastname, height) 'must be first expression
+        Me.id = id
+    End Sub
+
+    Public Overrides Sub ShowPersonData() 'replaces fully base class version
+        WriteLine(id)
+        MyBase.ShowPersonData() 'needn't be first expression
+    End Sub
+End Class
+
+Module M
+    Sub Main()
+        Dim pArray As Person() 'Array!
+        Dim pRef As Person 'Reference (not initialized, null ref)
+
+        Dim p As New Person(33, "Tom", "Smith", 180)
+        p.ShowPersonData()
+
+        WriteLine("------------------------------")
+
+        Dim employee As New Employee(111)
+        employee.ShowPersonData()
+
+        WriteLine("------------------------------")
+
+        employee = New Employee(222, 44, "Tim", "Miller", 190)
+        employee.ShowPersonData()
+    End Sub
+End Module
+#End If
+
+#If ClassExample9493 Then
+Imports System.Console
+Imports VB_Basics
+''' <summary>
+''' Sealed, abstract classes 
+''' </summary>
+Class C
+    Sub S() : End Sub
+    Overridable Sub M() : End Sub
+    Sub N() : End Sub
+    Overridable Sub P() : End Sub
+
+    Public Overrides Function ToString() As String
+        Return MyBase.ToString()
+    End Function
+
+    Public Overrides Function Equals(obj As Object) As Boolean
+        If obj.GetType() Is GetType(C) Then
+        End If
+        'or
+        If TypeOf obj IsNot C Then
+        End If
+        Return MyBase.Equals(obj)
+    End Function
+End Class
+
+Class D
+    Inherits C
+    Sub S(i%) : End Sub 'default shadow, so explicit overload specifiying necessary
+    Overloads Sub S(i%) : End Sub
+    Overrides Sub M() : End Sub
+    Shadows Sub N(i%)
+        'possible
+        MyBase.N()
+    End Sub
+    NotOverridable Overrides Sub P() : End Sub
+End Class
+
+Class DD
+    Inherits D
+    Overrides Sub P() : End Sub 'error can't be overridden
+End Class
+
+Class E
+    Sub S()
+        Dim d As New D
+        d.N() 'not available, shadows MyBase.N()
+        d.N(0)
+        d.S() 'now ok
+        d.S(0)
+    End Sub
+End Class
+
+MustInherit Class Abstract
+    Sub S() : End Sub
+    MustOverride Sub M()
+End Class
+
+NotInheritable Class Sealed
+End Class
+
+Interface Administration
+    Sub S() 'no public def.
+End Interface
+
+Class Admin
+    Implements Administration
+
+    Public Sub S() Implements Administration.S
+        Throw New NotImplementedException()
+    End Sub
+End Class
+
+Module M
+    Sub Main()
+    End Sub
+End Module
+#End If
+
+#If CheckTypeExample Then
+Imports System.Console
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim i As New Dictionary(Of Integer, String)
+    End Sub
+End Module
+#End If
+
+#If InterfaceExample0003Then Then
+Interface ProcessAdministration
+    Function StopProcess(processId As UShort) As Boolean
+    Function StartProcess(processId As UShort) As Boolean
+    Sub ShutDownAllProcesses()
+    Function GetProcessStatus(processId As UShort) As ProcessState
+End Interface
+#End If
+
+#If StreamExample0043 Then
+Imports System.Console
+
+Module M
+    Sub Main()
+        'Reading
+        Dim path As String = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+        Using reader As IO.TextReader = IO.File.OpenText(path + "\data.txt")
+            While reader.Peek() <> -1
+                WriteLine(reader.ReadLine())
+            End While
+        End Using
+
+        'or
+        Dim fileContent = IO.File.ReadAllLines(path + "\data.txt")
+        Console.WriteLine(fileContent)
+
+        WriteLine("File reading done.")
+
+        'Writing
+        'Creating random string array
+        Const numRows As Integer = 100000D
+        Dim stringArray() As String = New String(numRows) {}
+        For i = 0 To numRows - 1
+            stringArray(i) = Guid.NewGuid().ToString()
+        Next
+        IO.File.WriteAllLines(path + "\random_strings.txt", stringArray)
+
+        WriteLine("File writing done.")
+    End Sub
+End Module
+#End If
+
+#If StreamExample0034 Then
+Imports System.IO
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Sub Main()
+        '------------------------------
+        ' Write file
+        '------------------------------
+        Dim filePath = "C:\Users\" + Environment.UserName + "\Desktop\order_dispatch.txt"
+
+        Try
+            Const length = 100
+            Dim tw As TextWriter =
+                    New StreamWriter(
+                        (New FileStream(filePath, FileMode.Create)))
+            tw.WriteLine("{0,7} {1,8}", "OrderID", "Quantity")
+            Dim randomQuant = "0123456789ABC", quantity
+            Dim rand = New Random() 'Not in loop!
+
+            For k = 1 To length
+                quantity = ""
+                For m = 0 To 5 'generate random quantity
+                    quantity += randomQuant.ToCharArray()(rand.Next(randomQuant.Length))
+                    tw.WriteLine("{0,7:000000} {1,8}", k, quantity)
+                Next
+            Next
+            tw.Close()
+        Catch e As Exception
+            Console.WriteLine(e.Message)
+        End Try
+
+        Console.WriteLine("Data written.")
+        Console.ReadKey()
+
+        '------------------------------
+        'Read file
+        '------------------------------
+        Try
+            Dim tw As TextReader =
+                    New StreamReader(
+                        New FileStream(filePath, FileMode.Open))
+            Dim s As String
+            While tw.Peek <> -1
+                s = tw.ReadLine()
+                Try
+                    'tokenize line, default delimiter blank
+                    'succeding delimiter is consumed
+                    '"___a_b__c___d" ? splits to _, _, _, a_, b_, _, c_, _, _, d
+                    Integer.Parse(s.Split()(4)) 'jump To Catch If parse Or split fails                    
+                    Console.WriteLine(s)
+                Catch
+                    'simply ignore
+                End Try
+            End While
+            tw.Close()
+        Catch e As Exception
+            Console.WriteLine(e.Message)
+        End Try
+    End Sub
+End Module
+#End If
+
+#If StreamExample0043 Then
+Imports System.Console
+Imports System.Globalization
+Imports System.IO
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Class Database
+        Shared dbDict As Dictionary(Of UInteger, Employee)
+        Shared dbHash As HashSet(Of Employee)
+
+        Shared Sub New()
+            Using sr As StreamReader =
+                New StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) +
+                                 "\new_york_state_employees_key.txt")
+
+                Dim row As String
+                Dim employee As Employee
+
+                sr.ReadLine() 'ignore first row
+                While Not sr.EndOfStream
+                    row = sr.ReadLine()
+                    employee = New Employee(
+                        row.Split(";")(1),
+                        row.Split(";")(0),
+                        "x",
+                        row.Split(";")(3),
+                        row.Split(";")(4),
+                        DateTime.Parse(row.Split(";")(5), CultureInfo.InvariantCulture),
+                        row.Split(";")(6),
+                        row.Split(";")(7),
+                        UShort.Parse(row.Split(";")(8)),
+                        UShort.Parse(row.Split(";")(9)),
+                        Decimal.Parse(row.Split(";")(10).Substring(1)))
+                    dbHash.Add(employee)
+                End While
+            End Using
+        End Sub
+    End Class
+
+    Class Employee
+        Public Property Firstname As String
+        Public Property Lastname As String
+        Public Property MiddleInitial As Char
+        Public Property Profession As String
+        Public Property Department As String
+        Public Property EmployedSince As DateTime
+        Public Property Location As String
+        Public Property EmploymentType As String
+        Public Property Payroll As UShort
+        Public Property HoursWorked As UShort
+        Public Property AnnualSalary As Decimal
+
+        Public Sub New(firstname$, lastname$, middleInitial As Char, profession$, department$, employedSince As DateTime, location$, employmentType$, payroll As UShort, hoursWorked As UShort, annualSalary As Decimal)
+            Me.Firstname = firstname
+            Me.Lastname = lastname
+            Me.MiddleInitial = Char.ToUpper(middleInitial)
+            Me.Profession = profession
+            Me.Department = department
+            Me.EmployedSince = employedSince
+            Me.Location = location
+            Me.EmploymentType = employmentType
+            Me.Payroll = payroll
+            Me.HoursWorked = hoursWorked
+            Me.AnnualSalary = annualSalary
+        End Sub
+
+        Public Function QueryDatabase(department$, ageFrom As Byte, ageTo As Byte) As List(Of Employee)
+            Return Nothing
+        End Function
+    End Class
+
+    Sub Main()
+        WriteLine("ok")
+        Dim db As New Database()
+    End Sub
+End Module
+#End If
+
+#If StreamExample0034 Then
+Imports System.IO
+Imports System.Windows.forms
+''' <summary>
+''' File Systemdialog 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim FileDB As New OpenFileDialog()
+
+        FileDB.Filter = "All files | *.* | Text files | *.txt"
+
+        FileDB.FilterIndex = 2
+        FileDB.InitialDirectory = "C:\Temp"
+        FileDB.AddExtension = True
+        FileDB.DefaultExt = "txt"
+
+        If (FileDB.ShowDialog() = DialogResult.OK) Then
+            Dim SourceFile As StreamReader
+
+            SourceFile = New StreamReader(FileDB.FileName)
+
+            If (SourceFile IsNot Nothing) Then
+                Try
+                    Console.WriteLine(SourceFile.ReadToEnd())
+                Catch Except As Exception
+                    Console.WriteLine("Error: " & Except.Message)
+                Finally
+                    Console.WriteLine("In finally statement.")
+                    SourceFile.Close()
+                End Try
+            End If
+        Else
+            Console.WriteLine("User selected Cancel")
+        End If
+    End Sub
+End Module
+#End If
+
+#If DatabaseExample0034 Then
+Imports System.Console
+Imports System.Data.SqlClient
+''' <summary>
+''' Database: HumanRessources
+''' Table: Employees
+''' CREATE TABLE [dbo].[Employees]
+''' (
+''' [Id] SMALLINT Not NULL PRIMARY KEY, /* Short */
+''' [FirstName] NVARCHAR(50) Not NULL,  /* national Char varying, up To 50 */ 
+''' [LastName] NVARCHAR(50) Not NULL, 
+''' [Department] NVARCHAR(50) Not NULL, 
+''' [Fulltime] BIT NULL,
+''' [HireDate] Date NULL,               /* YYYY - MM - DD */
+''' [Salary] SMALLMONEY NULL            /* 4 bytes */
+''' )
+''' </summary>
+
+Module M
+    Sub Main()
+        'Reading
+        Const conStr = "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=HumanRessources;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+        Dim con As New SqlConnection(conStr)
+        Try
+            con.Open()
+            Const sqlStr = "SELECT * FROM [EMPLOYEES]"
+            Dim com As New SqlCommand(sqlStr, con)
+            Dim sqlReader = com.ExecuteReader()
+            While sqlReader.Read()
+                WriteLine($"{sqlReader(0)} {sqlReader(1),10} {sqlReader(2),10} {sqlReader(3),20}")
+            End While
+        Catch ex As Exception
+            WriteLine("Some database error occurred.")
+            WriteLine(ex.Message)
+            'or
+        Catch 'catch any error
+            WriteLine("Any error occurred.")
+        End Try
+        con.Close()
+
+        'Writing
+        Using connection As New SqlConnection(conStr)
+            connection.Open()
+            Dim Command As New SqlCommand With {
+                .Connection = connection,
+                .CommandText = "INSERT INTO [Employees] (Id, FirstName, LastName, Department, Fulltime, HireDate, Salary) VALUES(@ID, @FN, @LN, @DEP, @FULL, @HIRE, @SAL)"
+            }
+            Command.Parameters.Add(New SqlParameter("@ID", 29933))
+            Command.Parameters.Add(New SqlParameter("@FN", "Barry"))
+            Command.Parameters.Add(New SqlParameter("@LN", "Newman"))
+            Command.Parameters.Add(New SqlParameter("@DEP", "IT"))
+            Command.Parameters.Add(New SqlParameter("@FULL", False))
+            Command.Parameters.Add(New SqlParameter("@HIRE", New System.DateTime(2005, 3, 20)))
+            Command.Parameters.Add(New SqlParameter("@SAL", 50000))
+            Dim Result = Command.ExecuteNonQuery()
+            Console.WriteLine()
+            Console.WriteLine("Number of inserted datasets: " & Result)
+            Console.WriteLine("Terminate.")
+        End Using
+    End Sub
+End Module
+#End If
+
+#If OLEDBExample0923 Then
+Imports System.Console
+Imports Microsoft.Office.Interop.Excel
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports Application = Microsoft.Office.Interop.Excel.Application
+''' <summary>
+''' Add reference Interop Services
+''' Assemblies/Extensions/Microsoft.Office.Interop.Excel 15
+''' First create manually an Excel sheet with random data 
+''' </summary>
+
+Module M
+    Sub Main()
+        Read()
+        Write()
+    End Sub
+
+    Sub Read()
+        '------------------------------
+        ' Read Excel data
+        ' Use COM Object for simple
+        ' referencing
+        '------------------------------
+        MessageBox.Show(text:="Start reading Excel data.",
+                             buttons:=MessageBoxButtons.OK,
+                             icon:=MessageBoxIcon.Exclamation,
+                             caption:="Reading")
+        Dim path As String = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\ExcelTestData.xlsx"
+        Dim xlApp = New Application()
+        Dim xlWorkbook = xlApp.Workbooks.Open(path)
+        Dim xlWorksheet As Worksheet = xlWorkbook.Sheets(1) 'Excelsheets indexed 1..N
+        Dim xlRange = xlWorksheet.UsedRange 'complete data range
+
+        Dim rowCount = xlRange.Rows.Count
+        Dim colCount = xlRange.Columns.Count
+
+        Console.WriteLine("Rows=" & rowCount)
+        Console.WriteLine("Columns=" & colCount)
+
+        'Iterate over the rows And columns
+        For i = 1 To rowCount
+            For j = 1 To colCount
+                If j = 1 Then Console.WriteLine()
+                'Values to  console
+                If xlRange.Cells(i, j) IsNot Nothing And xlRange.Cells(i, j).Value2 IsNot Nothing Then
+                    Console.Write(xlRange.Cells(i, j).Value2.ToString() & vbTab)
+                End If
+            Next
+        Next
+
+        'Cleanup
+        GC.Collect()
+        GC.WaitForPendingFinalizers()
+
+        'Release com objects
+        Marshal.ReleaseComObject(xlRange)
+        Marshal.ReleaseComObject(xlWorksheet)
+
+        xlWorkbook.Close()
+        Marshal.ReleaseComObject(xlWorkbook)
+
+        xlApp.Quit()
+        Marshal.ReleaseComObject(xlApp)
+    End Sub
+
+    Sub Write()
+        '------------------------------
+        ' Write Excel data
+        '------------------------------
+        MessageBox.Show(text:="Start writing Excel data.",
+                             buttons:=MessageBoxButtons.OK,
+                             icon:=MessageBoxIcon.Exclamation,
+                             caption:="Writing")
+        Dim xlApp = New Application()
+
+        If xlApp Is Nothing Then
+            MessageBox.Show("Excel is not properly installed.")
+            Return
+        End If
+
+        Dim xlWorkbook As Workbook
+        Dim xlWorksheet As Worksheet
+        Dim misValue As Object = System.Reflection.Missing.Value 'dummy arguments
+
+        xlWorkbook = xlApp.Workbooks.Add(misValue)
+        xlWorksheet = xlWorkbook.Worksheets(1)
+
+        xlWorksheet.Cells(1, 1) = "ID"
+        xlWorksheet.Cells(1, 2) = "Name"
+        xlWorksheet.Cells(2, 1) = "1833"
+        xlWorksheet.Cells(2, 2) = "Tim Smith"
+        xlWorksheet.Cells(3, 1) = "9542"
+        xlWorksheet.Cells(3, 2) = "Martha Meyer"
+
+        'Suppress system messages
+#If 0 Then
+            xlApp.DisplayAlerts = false
+#End If
+        'Usage of placeholders for missing values (not forced) 
+        Dim path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\ExcelTestData.xlsx"
+        xlWorkbook.SaveAs(path, XlFileFormat.xlWorkbookDefault)
+        xlWorkbook.Close(True, misValue, misValue)
+        xlApp.Quit()
+
+        Marshal.ReleaseComObject(xlWorksheet)
+        Marshal.ReleaseComObject(xlWorkbook)
+        Marshal.ReleaseComObject(xlApp)
+
+        MessageBox.Show("Excel file created.")
+    End Sub
+End Module
+
+#End If
+#If LambdaExample0004 Then
+Imports System.Console
+Imports System.Math
+''' <summary>
+''' Lambda expression (anonymous delegate)
+''' Function lambda expression
+''' Sub lambda expression
+''' </summary>
+
+Module M
+    Sub Main()
+        'Multi-line version (funcLambda2D is of anonymous delegate type)
+        Dim funcLambda2D = Function(ByVal width As Single, ByVal height As Single) 'no optional keyword
+                               Return width * height
+                           End Function
+        WriteLine(funcLambda2D.Invoke(2, 3))
+        'or short
+        WriteLine(funcLambda2D(2, 3))
+
+        'Single-line version
+        Dim funcLambda3D = Function(width, height, depth) width * height * depth
+        WriteLine(funcLambda3D(2, 3, 4))
+
+        'Declaration and invokation inline
+        WriteLine((Function(x, y) Sqrt(x * x + y * y))(2, 3)) 'Function itself needs to be in brackets
+
+        'Sub lambda
+        Dim writeFormatted = Sub() WriteLine("Test")
+        writeFormatted()
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0004 Then
+Imports System.Console
+''' <summary>
+''' Delegate definition
+''' </summary>
+
+Module M
+    Function CircleArea!(ByVal Optional radius! = 1)
+        Return Math.PI * Math.Pow(radius, 2)
+    End Function
+
+    Function SphereVolume!(ByVal Optional radius! = 1)
+        Return 4 / 3 * Math.PI * Math.Pow(radius, 3)
+    End Function
+
+    Sub PrintCurrentDate()
+        WriteLine(Date.Now.ToShortDateString())
+    End Sub
+
+    Sub PrintCurrentTime()
+        WriteLine(Date.Now.ToShortTimeString())
+    End Sub
+
+    'Definition of delegate types
+    Delegate Function Calculation(r)
+    'or more comprehensive
+    Delegate Function FunctionDelegate(r!) As Single 'Delegate parameter can't be optional and can't own type shortcuts
+    Delegate Sub DateTimeInformation()
+
+    'delegates
+    Dim dlgCalc as Calculation
+    Dim dlgDate As DateTimeInformation
+
+    Sub Main()
+        Dim transaction As UInt32 = 112233
+        WriteLine("Transaction Id: " & transaction)
+
+        dlgDate = AddressOf PrintCurrentDate
+        If dlgDate IsNot Nothing Then
+            Write("Transaction Date: ")
+            dlgDate()
+            'or
+            dlgDate.Invoke()
+        End If
+
+        dlgDate = AddressOf PrintCurrentTime
+        If dlgDate IsNot Nothing Then
+            Write("Transaction Time: ") : dlgDate()
+        End If
+
+        dlgCalc = AddressOf CircleArea
+        WriteLine(dlgCalc(5))
+
+        dlgCalc = AddressOf SphereVolume
+        WriteLine(dlgCalc(5))
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0003 Then
+Imports System.Console
+''' <summary>
+''' Multicast-Delegate
+''' Remove Delegate
+''' Multicast-Delegate stored as array or list
+''' </summary>
+
+Module M
+    Enum ProcessState
+        ACTIV
+        SUSPENDED
+        OBSCURE
+        STOPPED
+    End Enum
+
+    'Methods
+    Sub ProcStart(ByVal procId As UShort)
+        WriteLine($"Start Process with Id {procId}")
+    End Sub
+
+    Sub ProcStop(ByVal procId As UShort)
+        WriteLine($"Stop Process with Id {procId}")
+    End Sub
+
+    Function GetProcState(ByVal procId As UShort) As String
+        Dim seed As Integer = Convert.ToInt32(Now.Ticks And &H7FFFFFFF) 'Bit mask with max. singned integer
+        Dim random As New Random(seed) 'alternatively Randomize u. Rnd()
+        Dim enumArray As Array = System.Enum.GetNames(GetType(ProcessState))
+        Dim numEnumElements = enumArray.Length
+        Dim randomValue = random.Next(numEnumElements)
+        Dim state = enumArray(randomValue)
+        WriteLine($"Process state: {state}")
+        Return state
+    End Function
+
+    'Delegate type definitions
+    Delegate Sub ProcessDelegate(ByVal id As UShort)
+    Delegate Function FunctionDelegate(a, b, c) As Single
+
+    Sub Main()
+        'Delegate instance
+        Dim processStarter As ProcessDelegate
+        processStarter = AddressOf ProcStart
+
+        'or in short form
+        Dim processStopper As ProcessDelegate = AddressOf ProcStop
+
+        'or with new operator
+        Dim processStop As New ProcessDelegate(AddressOf ProcStop)
+
+        'Multicast delegate
+        Dim multDelegates As [Delegate] 'Delegate as the class not as keyword
+        'or
+        Dim delegates As MulticastDelegate
+        delegates = ProcessDelegate.Combine(processStarter,
+                                            CType(AddressOf GetProcState, ProcessDelegate), 'or New ProcessDelegate(...)
+                                            processStopper)
+
+        'passing a value to all delegates (with the correct datatype)
+        Dim processId = 2233US
+        delegates.DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'load with lambda expression (but overwrites the previous values)
+        'casting is necessary because lambda expression is of type anonymous delegate, different types can't be mixed (else runtime errror)
+        processId = 3344US
+        delegates = ProcessDelegate.Combine(processStarter, processStop, CType(Sub(ByVal id As UShort)
+                                                                                   WriteLine($"Process-Id: {id}")
+                                                                                   WriteLine("Raise other process")
+                                                                                   processStarter(id)
+                                                                               End Sub, ProcessDelegate))
+
+        delegates.DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'Removing a delegate
+        MulticastDelegate.Remove(delegates, processStarter).DynamicInvoke(processId) 'delegate itself stays unchanged
+        'or
+        [Delegate].Remove(delegates, processStarter).DynamicInvoke(processId)
+
+        WriteLine(New String("-", 30))
+
+        'Multicast-delegate with function and sub lambdas
+        Dim multFuncDel = FunctionDelegate.Combine(Function(x, y, z) x + y + z, Function(x, y, z) x - y - z)
+        Dim multSubDel = ProcessDelegate.Combine(Sub(u) WriteLine(u), Sub(u) WriteLine(u), Sub(u) WriteLine(u))
+
+        WriteLine(multFuncDel.DynamicInvoke(1, 2, 3)) '= -4, result is the last function call, rest temporary
+        multSubDel.DynamicInvoke(1) '= 1 1 1
+
+        'Multicast-delegate stored as a array or list
+        Dim arrayOfAddresses() As ProcessDelegate = {AddressOf ProcStart, AddressOf ProcStop}
+        Dim listOfAddresses As New List(Of ProcessDelegate) From {AddressOf ProcStart, AddressOf ProcStop}
+
+        Dim multSubDelArray = ProcessDelegate.Combine(arrayOfAddresses)
+        Dim multSubDelList = ProcessDelegate.Combine(listOfAddresses.ToArray()) 'but need to transform to array
+
+        multSubDelArray.DynamicInvoke(1122US)
+        multSubDelList.DynamicInvoke(3344US)
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0049 Then
+Imports System.Console
+''' <summary>
+''' Delegate for Callback 
+''' </summary>
+
+Class Provider
+    Delegate Sub CallbackDelegate(i%)
+    Public Shared Callback As New CallbackDelegate(AddressOf CallbackProcedure) 'Delegate stores a reference to the method's entry point
+
+    Private Shared Sub CallbackProcedure(i%)
+        WriteLine("i = {0,2}", i)
+    End Sub
+End Class
+
+Class Subscriber
+    Shared Sub Main()
+        For index = 1 To 10
+            Provider.Callback(index)
+        Next
+    End Sub
+End Class
+#End If
+
+#If DelegateExample0049 Then
+Imports System.Console
+''' <summary>
+''' Delegate for Dependency Injection
+''' Predicate for check swaping on bubble sort algorithm 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim array(99) As Integer
+        Dim copy(99) As Integer
+
+        FillArrayRandomly(array)
+        array.CopyTo(copy, 0)
+
+        WriteLine("Unsorted copy: " & String.Join(",", copy))
+        WriteLine()
+
+        BubbleSort(copy, Function(x, y) IIf(x > y, True, False)) 'Descendant (or as different delegates)
+        'or shorter
+        BubbleSort(copy, Function(x, y) x > y)
+
+        WriteLine("Sorted copy (Desc): " & String.Join(",", copy))
+        WriteLine()
+
+        BubbleSort(copy, Function(x, y) IIf(x > y, False, True)) 'Ascendant
+        'or shorter
+        BubbleSort(copy, Function(x, y) x < y)
+
+        WriteLine("Sorted copy (Asc): " & String.Join(",", copy))
+    End Sub
+
+    Delegate Function Predicate(x As Integer, y As Integer) As Boolean
+
+    'Fill array with random values between -500 and +500
+    Private Sub FillArrayRandomly(ByRef array() As Integer) 'byref default, array arguments must be passed byref if declared with dim, redim, static
+        For index = 0 To array.GetUpperBound(0)
+            array(index) = 500 - Int(Rnd() * 1001)
+            WriteLine("Index: {0} Random value: {1}", index, array(index))
+        Next
+    End Sub
+
+    Private Sub BubbleSort(ByRef array() As Integer, pred As Predicate)
+        For index = 0 To Microsoft.VisualBasic.Information.UBound(array) - 1
+            For index2 = index + 1 To UBound(array)
+                If Not pred(array(index), array(index2)) Then
+                    Dim t = array(index2)
+                    array(index2) = array(index)
+                    array(index) = t
+                End If
+            Next
+        Next
+    End Sub
+End Module
+#End If
+
+#If DelegateExample0044 Then
+Imports System.Console
+''' <summary>
+''' Special predefined Action() and Function() delegate
+''' </summary>
+
+Module M
+    Sub Proc(i As Integer, j As Integer, k As Double)
+    End Sub
+    Function Funct(i As UShort, j As Integer) As Double
+        Return 1.0
+    End Function
+
+    Sub Main()
+        Dim action As System.Action(Of Integer, Integer, Double)
+        action = AddressOf Proc
+
+        Dim func As System.Func(Of UShort, Integer, Double)
+        func = AddressOf Funct
+
+        'compatible to lambda expression
+        action = Sub(a, b, c) WriteLine(a + b + c)
+        func = Function(a, b) 1.0
+
+        action(1, 2, 3)
+        WriteLine(func(0, 0))
+    End Sub
+End Module
+#End If
+
+#If EventExample9343 Then
+Imports System.Console
+Imports System.Threading
+''' <summary>
+''' Events are specialized delegates 
+''' </summary>
+
+Module M
+    Class EventArgsLimitsReached : Inherits EventArgs
+        Private _timePoint As DateTime
+        Public Property TimePoint As DateTime
+            Get
+                Return _timePoint
+            End Get
+            Set
+                _timePoint = Value
+            End Set
+        End Property
+    End Class
+
+    Delegate Sub LimitsReached(sender As Object, eventArgs As EventArgsLimitsReached)
+    Event LimitsReachedEvent As LimitsReached
+
+    Sub OnLimitsReached(sender As Object, eventArgs As EventArgsLimitsReached)
+        WriteLine()
+        WriteLine("Event has been raised.")
+        WriteLine("Sender: {0}", sender)
+        WriteLine("Event data: {0}", eventArgs.TimePoint.ToLongTimeString())
+        WriteLine("Press any key to continue")
+        ReadKey()
+    End Sub
+
+    Sub RaiseLimitsReachedEvent()
+        Dim random As New Random()
+        BackgroundColor = ConsoleColor.Black
+        ForegroundColor = ConsoleColor.Yellow
+        Dim future = Now.AddSeconds(10)
+
+        While Now < future
+            Dim rand = random.Next(1000)
+            Clear()
+            Write(rand)
+            If rand > 990 Then
+                RaiseEvent LimitsReachedEvent("The Raiser", New EventArgsLimitsReached() With {.TimePoint = DateTime.Now})
+            End If
+            Thread.Sleep(30)
+        End While
+        WriteLine()
+    End Sub
+
+    Sub Main()
+        AddHandler LimitsReachedEvent, AddressOf OnLimitsReached
+        RaiseLimitsReachedEvent()
+    End Sub
+End Module
+#End If
+
+#If EventExample9488 Then
+Imports System.Console
+Imports System.Drawing
+Imports System.Windows.Forms
+
+''' <summary>
+''' Use of predefined Click event in System.Windows.Forms 
+''' Predefined Handler: OnClick(...) (if no controlname is used)
+''' </summary>
+
+Module M
+    WithEvents button As Button 'WithEvents includes defining of the variable and connects the variable with the eventhandler
+    WithEvents eventFrm As Form
+
+    Sub Main()
+        Dim frm As New Form With {
+            .Size = New Drawing.Size(600, 400)
+        }
+
+        If InputBox("modal=1, nonmodal=2", Title:="Choose form openmode", DefaultResponse:=2) = 2 Then
+            frm.Show() 'non-modal, terminates with console
+            ReadKey()
+        Else
+            frm.ShowDialog() 'modal, waits
+        End If
+
+        eventFrm = New Form()
+
+        button = New Button With {
+            .Size = New Drawing.Size(100, 50),
+            .Location = New Drawing.Point(50, 50),
+            .Text = "Fire click event",
+            .BackColor = Color.Yellow
+        }
+        eventFrm.Controls.Add(button)
+        eventFrm.KeyPreview = True 'for getting the key event
+
+        AddHandler button.Click, AddressOf ButtonClickEventHandler
+        AddHandler eventFrm.KeyPress, AddressOf FormKeyEventHandler
+        eventFrm.ShowDialog()
+    End Sub
+
+    Sub ButtonClickEventHandler(sender As Object, e As System.EventArgs) Handles button.Click
+        MsgBox("Handling the event.")
+    End Sub
+
+    Sub FormKeyEventHandler(sender As Object, e As KeyPressEventArgs) Handles eventFrm.KeyPress
+        If e.KeyChar = Convert.ToChar(Keys.Escape) Then Application.Exit() 'or eventFrm.Close()
+    End Sub
+End Module
+#End If
+
+#If ThreadExample0045 Then
+Imports System.Console
+Imports System.DateTime
+Imports System.Threading
+''' <summary>
+''' Thread definition
+''' </summary>
+
+Module M
+    Sub Worker()
+        For index = 1 To 10
+            WriteLine(Now.Ticks)
+        Next
+    End Sub
+
+    Sub Main()
+        Dim t As Thread
+
+        'Definition on ThreadStart
+        Dim ts As ThreadStart
+        ts = New ThreadStart(AddressOf Worker)
+
+        'short form
+        t = New Thread(AddressOf Worker)
+        t = New Thread(ts) 'Thread constructor copies ThreadStart
+        ts = Nothing 'no problem
+
+        'Definition with lambda expression
+        ts = Sub() WriteLine("Lamda expression")
+        Dim t2 = New Thread(ts)
+
+        'Start thread
+        t.Start()
+        t2.Start()
+    End Sub
+End Module
+#End If
+
+#If ThreadExample0045 Then
+Imports System.Console
+Imports System.Threading
+''' <summary>
+''' Mainthread, Name, Priority, Backgroundworker
+''' </summary>
+
+Module M
+    Sub Main()
+        With Nothing
+            'Normally thread runs from mainthread independently
+            Dim t As New Thread(Sub()
+                                    Dim future = Now.AddSeconds(5)
+                                    While (Now < future)
+                                        WriteLine($"Threadname: {Thread.CurrentThread.Name}, Tick: {Now.Ticks}")
+                                    End While
+                                End Sub) With
+                            {
+                            .Name = "Workerthread",
+                            .Priority = ThreadPriority.Highest
+                           }
+            t.Start()
+        End With
+
+        Thread.Sleep(8000)
+
+        'If thread is started as a backgroundthread it depends from the mainthread
+        With Nothing
+            'Normally thread runs from mainthread independently
+            Dim t As New Thread(Sub()
+                                    Dim future = Now.AddSeconds(10)
+                                    While (Now < future)
+                                        WriteLine($"Threadname: {Thread.CurrentThread.Name}, Tick: {Now.Ticks}")
+                                    End While
+                                End Sub) With
+                            {
+                            .Name = "Workerthread as Backgroundthread",
+                            .IsBackground = True
+                           }
+            t.Start()
+
+            Thread.Sleep(2000)
+            WriteLine("Mainthread terminates.") 'and backgroundthread
+        End With
+End Module
+#End If
+
+#If ThreadExample0055 Then
+Imports System.Console
+Imports System.Threading
+''' <summary>
+''' Thread Priority
+''' </summary>
+
+Module M
+    Class Worker
+        Public Shared results As New List(Of Long)
+        Public i As Long
+        Sub Counter()
+            While True
+                Try
+                    i += 1
+                Catch ex As Exception
+                    WriteLine("Thread: {0,-6}, i = {1}", Thread.CurrentThread.Name, i)
+                    results.Add(i)
+                    Exit While
+                End Try
+            End While
+        End Sub
+    End Class
+
+    Sub Main()
+        'Thread priority
+        Dim worker As New Worker 'sharing one object, but every thread has its own stackframe
+
+        Dim w1 = New Thread(AddressOf worker.Counter) With {.Priority = ThreadPriority.Lowest, .Name = "Low"}
+        Dim w2 = New Thread(AddressOf worker.Counter) With {.Priority = ThreadPriority.Normal, .Name = "Normal"}
+        Dim w3 = New Thread(AddressOf worker.Counter) With {.Priority = ThreadPriority.Highest, .Name = "High"}
+
+        w1.Start()
+        w2.Start()
+        w3.Start()
+
+        WriteLine("Starting threads and sleep for 5s.")
+        Thread.Sleep(5000)
+
+        WriteLine("Awake. Aborting threads.")
+        w1.Abort()
+        w2.Abort()
+        w3.Abort()
+
+        If Worker.results.Count = 3 Then
+            WriteLine("Delta Low-High: " & Int((Worker.results(2) / Worker.results(0) - 1) * 100) & "%")
+        End If
+    End Sub
+End Module
+#End If
+
+#If TaskExample0045 Then
+Imports System.Console
+Imports System.Threading.Tasks
+Imports System.Threading
+Imports System.Diagnostics
+''' <summary>
+''' Task 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim actionFlight As Action = Sub()
+                                         WriteLine("Retrieving your Flight number...")
+                                         Thread.Sleep(5000)
+                                         Randomize()
+                                         WriteLine("Your Flight booking number is: " & Convert.ToUInt64((Rnd() * 10000000000.0)))
+                                     End Sub
+
+        Dim actionHotel As Action = Sub()
+                                        WriteLine("Retrieving your Hotel number...")
+                                        Thread.Sleep(2000)
+                                        Randomize()
+                                        WriteLine("Your Hotel booking number is: " & Convert.ToUInt64((Rnd() * 10000000000.0)))
+                                    End Sub
+
+        Dim actionCar As Action = Sub()
+                                      WriteLine("Retrieving your Car reservation number...")
+                                      Thread.Sleep(4000)
+                                      Randomize()
+                                      WriteLine("Your Car booking number is: " & Convert.ToUInt64((Rnd() * 10000000000.0)))
+                                  End Sub
+
+        Dim watch = Stopwatch.StartNew()
+        actionFlight()
+        actionHotel()
+        actionCar()
+        watch.Stop()
+        WriteLine($"{vbLf}Time consumed: {watch.Elapsed.TotalSeconds}s")
+
+        WriteLine(vbLf + "Restarting...")
+
+        watch.Restart()
+        Dim t1 = Task.Run(actionFlight)
+        Dim t2 = Task.Run(actionHotel)
+        Dim t3 = Task.Run(actionCar)
+        Task.WaitAll(t1, t2, t3)
+        watch.Stop()
+        WriteLine($"{vbLf}Time consumed: {watch.Elapsed.TotalSeconds}s")
+    End Sub
+End Module
+#End If
+
+#If TaskExample9943 Then
+Imports System.Console
+''' <summary>
+''' Aynchronous Task
+''' </summary>
+
+Module M
+    Sub Main()
+        AsyProc()
+        WriteLine("Mainthread goto sleep")
+        Threading.Thread.Sleep(10000)
+        WriteLine("Mainthread awakes")
+    End Sub
+
+    Async Sub AsyProc()
+        WriteLine("Return immediately")
+        Await Task.Delay(5000)
+        WriteLine("Continue Work")
+    End Sub
+End Module
+#End If
+
+#If TaskExample0035 Then
+Imports System.Console
+Imports System.IO
+Imports System.Net
+Imports System.Threading.Tasks
+Imports System.Text
+Imports System.Text.RegularExpressions
+Imports System.Drawing
+''' <summary>
+''' Async Tasks 
+''' </summary>
+
+Module M
+    Sub Main()
+        Dim employeesFile$ = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) _
+            + "\Office\Datenbank\Sample Data\new_york_state_employees_key.txt"
+        Dim input$, result%, sum%
+
+        Dim task1 = GetDataArray(employeesFile)
+        Dim task2 = AnalyzeWebContent("https://www.welt.de")
+        Dim doneTask1 = False
+        Dim doneTask2 = False
+
+        Do
+            If task1.IsCompleted And Not doneTask1 Then
+                doneTask1 = True
+                For index = 1 To 10
+                    WriteLine(task1.Result(index))
+                Next
+            End If
+
+            If task2.IsCompleted And Not doneTask2 Then
+                doneTask2 = True
+                WriteLine("Webcontent fully analyzed.")
+            End If
+
+            input = ReadLine()
+
+            If Integer.TryParse(input, result) Then
+                sum += result
+                input = ReadLine()
+                If Integer.TryParse(input, result) Then sum += result
+            End If
+            WriteLine("Total: {0}", sum)
+            sum = 0
+        Loop While input <> "x"
+    End Sub
+
+    Private Async Function GetDataArray(employeesFile As String) As Task(Of String())
+        Dim numRecords As UInteger
+
+        numRecords = Await GetNumRecords(employeesFile)
+        Dim dataArray(numRecords) As String
+
+        For index As UInteger = 0 To numRecords
+            dataArray(index) = Guid.NewGuid().ToString()
+        Next
+        Return dataArray
+    End Function
+
+    Private Async Function GetNumRecords(employeesFile As String) As Task(Of UInteger)
+        'Streamreader
+        Dim counter%
+        Using stream As New StreamReader(New FileStream(employeesFile, FileMode.Open))
+            Dim record$
+            While Not stream.EndOfStream
+                record = stream.ReadLine()
+                counter += 1
+            End While
+        End Using
+
+        'Short version
+        counter = 0
+        Dim datasets = File.ReadLines(employeesFile)
+        For Each item As String In datasets
+            counter += 1
+        Next
+        Return counter
+    End Function
+
+    Private Async Function AnalyzeWebContent(website As String) As Task
+        'Download web content
+        Dim client = New WebClient()
+        client.Encoding = Encoding.UTF8
+        Dim content$ = Await client.DownloadStringTaskAsync(New Uri(website))
+        Dim pattern = "src=""[^""]+\.jpg"""
+        Dim match As Match = Regex.Match(content, pattern)
+        Dim [set] As New HashSet(Of String)
+
+        'Find all jpg-Links in document
+        While match.Success
+            Console.WriteLine("Found at position {0}: {1}", match.Index, match.Value)
+            [set].Add(Mid(match.Value, 6, Len(match.Value) - 6)) 'ignore duplicates
+            match = match.NextMatch()
+        End While
+
+        'Download jpgs
+        Dim stream As Byte()
+        Dim image As Image
+        Dim counter%
+        For Each item As String In [set]
+            stream = Await client.DownloadDataTaskAsync(item)
+            image = Image.FromStream(New MemoryStream(stream))
+            image.Save("Picture-" & counter & ".jpg", Imaging.ImageFormat.Jpeg) 'Projectpath: C:\Users\test\Desktop\Programmierung\VB\VB Projects\VB Basics\bin\Debug
+            counter += 1
+        Next
+
+        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\webcontent.txt", content)
+    End Function
+End Module
+#End If
+
+#If ExceptionExample0034 Then
+Imports System.Console
+''' <summary>
+'''  
+''' </summary>
+
+Module M
+    Sub Main()
+        WriteLine("")
+    End Sub
+End Module
+#End If
